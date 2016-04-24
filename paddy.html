@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+	<meta content='text/html;charset=utf-8' http-equiv='Content-Type'>
+	<meta content='utf-8' http-equiv='encoding'>
+	<head>
+		<title>hbpaddy</title>
+	</head>
+	<body>
+		<canvas id='paddy' style="position:absolute; background:url(paddy_mouth.png); background-size:100% 100%;  background-repeat: no-repeat; "></canvas>
+		<img id='nipp' src="nipp1.png" style="position:absolute;"/>
+		<div style="position:absolute">HELP SAVE PADDY'S LOST AND FROZEN NIPPLE</div>
+		<script text='text/javascript'>
+			var mouse_path=[];
+			var mouse=[]
+			document.addEventListener('mousemove',function(ev) {
+				mouse[0]=ev.clientX;
+				mouse[1]=ev.clientY;	
+			});
+
+			var tong=new Audio('tongue.ogg');
+			tong.loop=true;
+			tong.play();
+			var audio=[
+				new Audio('0.ogg'),
+				new Audio('1.ogg'),
+				new Audio('2.ogg'),
+				new Audio('3.ogg'),
+				new Audio('4.ogg'),
+				new Audio('5.ogg'),
+				new Audio('6.ogg'),
+				new Audio('7.ogg'),
+				new Audio('8.ogg'),
+				new Audio('9.ogg'),
+			]
+
+			var cnv=document.getElementById('paddy')
+			var nip=document.getElementById('nipp')
+			var ctx=cnv.getContext('2d');
+			cnv.width=window.innerWidth;
+			cnv.height=window.innerHeight;
+			var mouth=[0.5135135135135135*cnv.width,0.35558252427184467*cnv.height]
+			var nippPos=[Math.random()*cnv.width,Math.random()*cnv.height]
+			nip.style.left=nippPos[0]-nip.width/2+"px";
+			nip.style.top=nippPos[1]-nip.height/2+"px";
+
+
+			ctx.strokeStyle='#5f3a59';
+			ctx.fillStyle='rgb(95,58,89)'
+			document.body.style.margin=0;
+			document.body.style.overflow='hidden';
+			document.body.style.cursor='none';
+			var pos=0;
+
+			function dist(a,b) {
+				return Math.sqrt(Math.pow(a[0]-b[0],2)+Math.pow(a[1]-b[1],2))
+			}
+			window.setInterval(function(){
+				if(typeof(mouse[0])!=='undefined') {
+					if(mouse_path.length>100)
+						mouse_path.shift()
+					mouse_path.push(mouse.slice(0))
+				}
+				var last=mouse_path[mouse_path.length-1];
+				for(var i in mouse_path) {
+					var prev=mouse_path[i-1]?mouse_path[i-1]:mouth
+					if(dist(mouse_path[i],prev) > 0.01*cnv.width) {
+						mouse_path[i][0]=(mouse_path[i][0]+prev[0])/2
+						mouse_path[i][1]=(mouse_path[i][1]+prev[1])/2
+					}
+				}
+
+				ctx.clearRect(0,0,cnv.width,cnv.height);
+				var r=0.015*cnv.width
+				ctx.moveTo.apply(ctx,mouth)
+				ctx.arc(mouth[0],mouth[1],r/2,0,2*Math.PI)
+				ctx.fill();
+				for(var i in mouse_path) {
+					r=0.015*cnv.width*Math.sqrt((1-i/mouse_path.length))
+					ctx.lineWidth=r;
+					ctx.beginPath();
+					ctx.moveTo.apply(ctx,mouse_path[i-1]?mouse_path[i-1]:mouth)
+					ctx.lineTo.apply(ctx,mouse_path[i])
+					ctx.stroke()
+					ctx.arc(mouse_path[i][0],mouse_path[i][1],r/2,0,2*Math.PI)
+					ctx.fill()
+				}
+				var tmpnip=nippPos.slice(0)
+				if(dist(mouse,tmpnip)<nip.width/2.5) {
+					nippPos=[Math.random()*cnv.width,Math.random()*cnv.height]
+					nip.style.left=nippPos[0]-nip.width/2+"px";
+					nip.style.top=nippPos[1]-nip.height/2+"px";
+					audio[Math.floor(audio.length*Math.random())].play();
+				}
+
+			},10);
+
+		</script>
+	</body>
+</html>
